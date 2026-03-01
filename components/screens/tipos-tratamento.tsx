@@ -2,14 +2,8 @@
 
 import { useApp } from "@/lib/store"
 import { MobileShell } from "@/components/mobile-shell"
-import { ChevronRight, Stethoscope } from "lucide-react"
-
-const categoryColors: Record<string, string> = {
-  "Protese Removivel": "bg-primary/10 text-primary",
-  "Protese Fixa": "bg-accent/10 text-accent",
-  "Implantodontia": "bg-chart-4/10 text-chart-4",
-  "Estetica": "bg-chart-5/10 text-chart-5",
-}
+import { ChevronRight, Clock } from "lucide-react"
+import Image from "next/image"
 
 export function TiposTratamentoScreen() {
   const { tiposTratamento, navigate } = useApp()
@@ -30,25 +24,34 @@ export function TiposTratamentoScreen() {
             </h3>
             {tiposTratamento
               .filter((t) => t.categoria === cat)
-              .map((tipo) => {
-                const colorClass = categoryColors[cat] || "bg-primary/10 text-primary"
-                return (
-                  <button
-                    key={tipo.id}
-                    onClick={() => navigate("tipo-tratamento-detalhe", { id: tipo.id })}
-                    className="flex items-center gap-3 bg-card rounded-xl p-4 border border-border shadow-sm hover:border-primary/30 transition-colors text-left"
-                  >
-                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${colorClass}`}>
-                      <Stethoscope className="w-5 h-5" />
-                    </div>
+              .map((tipo) => (
+                <button
+                  key={tipo.id}
+                  onClick={() => navigate("tipo-tratamento-detalhe", { id: tipo.id })}
+                  className="bg-card rounded-xl border border-border shadow-sm overflow-hidden hover:border-primary/30 transition-colors text-left"
+                >
+                  {/* Image */}
+                  <div className="relative w-full h-40 bg-muted">
+                    <Image
+                      src={tipo.imagens[0]}
+                      alt={tipo.nome}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  {/* Info */}
+                  <div className="p-3.5 flex items-center gap-3">
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold text-foreground">{tipo.nome}</p>
-                      <p className="text-xs text-muted-foreground mt-0.5">Duracao: {tipo.duracao}</p>
+                      <div className="flex items-center gap-1.5 mt-1">
+                        <Clock className="w-3 h-3 text-muted-foreground" />
+                        <p className="text-xs text-muted-foreground">{tipo.duracao}</p>
+                      </div>
                     </div>
                     <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-                  </button>
-                )
-              })}
+                  </div>
+                </button>
+              ))}
           </div>
         ))}
       </div>

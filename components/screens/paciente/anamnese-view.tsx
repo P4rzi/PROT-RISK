@@ -2,7 +2,7 @@
 
 import { useApp, type Paciente } from "@/lib/store"
 import { MobileShell } from "@/components/mobile-shell"
-import { AlertCircle, Pill, Heart, Users, Cigarette, MessageCircle, FileText, Calendar } from "lucide-react"
+import { AlertCircle, Pill, Heart, Users, Cigarette, MessageCircle, FileText, Calendar, ShieldAlert } from "lucide-react"
 
 export function PacienteAnamneseView() {
   const { currentUser, anamneses, dentistas } = useApp()
@@ -49,6 +49,27 @@ export function PacienteAnamneseView() {
             {dentista && <p className="text-xs text-muted-foreground">{dentista.nome}</p>}
           </div>
         </div>
+
+        {minhaAnamnese.riscos && minhaAnamnese.riscos.length > 0 && (
+          <div className="bg-card rounded-xl p-4 border border-destructive/20 shadow-sm">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-destructive/10 text-destructive">
+                <ShieldAlert className="w-4 h-4" />
+              </div>
+              <h4 className="text-xs font-semibold text-destructive uppercase tracking-wide">Fatores de risco</h4>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {minhaAnamnese.riscos.map((risco, i) => (
+                <span
+                  key={i}
+                  className="inline-block text-xs font-medium text-destructive bg-destructive/10 px-2.5 py-1 rounded-full"
+                >
+                  {risco}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
 
         {campos.map((campo, i) => {
           const Icon = campo.icon

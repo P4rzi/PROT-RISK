@@ -129,15 +129,15 @@ export function DentistaHome() {
           </button>
 
           <button
-            onClick={() => navigate("dentista-tratamentos", { filtro: "finalizado" })}
+            onClick={() => navigate("dentista-pacientes-finalizados")}
             className="flex items-center gap-4 bg-card rounded-xl p-4 border border-border shadow-sm hover:border-primary/30 transition-colors"
           >
             <div className="w-11 h-11 rounded-lg bg-accent/10 flex items-center justify-center">
               <CheckCircle2 className="w-5 h-5 text-accent" />
             </div>
             <div className="flex-1 text-left">
-              <p className="text-sm font-semibold text-foreground">Tratamentos finalizados</p>
-              <p className="text-xs text-muted-foreground mt-0.5">Historico de tratamentos</p>
+              <p className="text-sm font-semibold text-foreground">Pacientes finalizados</p>
+              <p className="text-xs text-muted-foreground mt-0.5">Pacientes com tratamento concluido</p>
             </div>
           </button>
 

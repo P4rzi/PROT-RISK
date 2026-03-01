@@ -1,13 +1,9 @@
 import type { Metadata, Viewport } from 'next'
-import { Outfit } from 'next/font/google'
+import { Inter } from 'next/font/google'
 
 import './globals.css'
 
-const outfit = Outfit({ 
-  subsets: ['latin'], 
-  variable: '--font-outfit',
-  weight: ['300', '400', '500', '600', '700', '900']
-})
+const _inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 
 export const metadata: Metadata = {
   title: 'ProtRisk - Sistema Odontologico',
@@ -29,7 +25,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR">
-      <body className={`${outfit.variable} font-sans antialiased max-w-[430px] mx-auto min-h-screen bg-background`}>
+      <body className="font-sans antialiased max-w-[430px] mx-auto min-h-screen bg-background">
         {children}
       </body>
     </html>

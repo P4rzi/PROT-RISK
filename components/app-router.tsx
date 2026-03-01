@@ -17,6 +17,7 @@ import { DentistaAnamneseForm } from "@/components/screens/dentista/anamnese-for
 import { DentistaAnamneseView } from "@/components/screens/dentista/anamnese-view"
 import { DentistaNovoTratamento } from "@/components/screens/dentista/novo-tratamento"
 import { DentistaPacientesTratamentos } from "@/components/screens/dentista/pacientes-tratamentos"
+import { DentistaPacientesFinalizados } from "@/components/screens/dentista/pacientes-finalizados"
 
 const screens: Record<string, React.ComponentType> = {
   login: LoginScreen,
@@ -38,6 +39,7 @@ const screens: Record<string, React.ComponentType> = {
   "dentista-anamnese-view": DentistaAnamneseView,
   "dentista-novo-tratamento": DentistaNovoTratamento,
   "dentista-pacientes-tratamentos": DentistaPacientesTratamentos,
+  "dentista-pacientes-finalizados": DentistaPacientesFinalizados,
 }
 
 export function AppRouter() {

@@ -42,6 +42,7 @@ export interface Anamnese {
   alergias: string
   medicamentos: string
   doencasPreExistentes: string
+  riscos: string[]
   historicoFamiliar: string
   habitos: string
   queixaPrincipal: string
@@ -56,7 +57,7 @@ export interface TipoTratamento {
   duracao: string
   indicacoes: string
   contraindicacoes: string
-  imagem?: string
+  imagens: string[]
 }
 
 // Mock data
@@ -84,17 +85,17 @@ const mockTratamentos: Tratamento[] = [
 ]
 
 const mockAnamneses: Anamnese[] = [
-  { id: "1", pacienteId: "1", dentistaId: "1", data: "2025-01-10", alergias: "Penicilina", medicamentos: "Anti-hipertensivo", doencasPreExistentes: "Hipertensao", historicoFamiliar: "Diabetes na familia", habitos: "Nao fuma", queixaPrincipal: "Dificuldade para mastigar", observacoes: "Paciente colaborativo" },
-  { id: "2", pacienteId: "2", dentistaId: "1", data: "2025-01-28", alergias: "Nenhuma", medicamentos: "Nenhum", doencasPreExistentes: "Nenhuma", historicoFamiliar: "Sem historico relevante", habitos: "Ex-fumante", queixaPrincipal: "Perda dentaria", observacoes: "Boa saude geral" },
+  { id: "1", pacienteId: "1", dentistaId: "1", data: "2025-01-10", alergias: "Penicilina", medicamentos: "Anti-hipertensivo", doencasPreExistentes: "Hipertensao", riscos: ["Pressao alta", "Diabetes"], historicoFamiliar: "Diabetes na familia", habitos: "Nao fuma", queixaPrincipal: "Dificuldade para mastigar", observacoes: "Paciente colaborativo" },
+  { id: "2", pacienteId: "2", dentistaId: "1", data: "2025-01-28", alergias: "Nenhuma", medicamentos: "Nenhum", doencasPreExistentes: "Nenhuma", riscos: [], historicoFamiliar: "Sem historico relevante", habitos: "Ex-fumante", queixaPrincipal: "Perda dentaria", observacoes: "Boa saude geral" },
 ]
 
 const mockTiposTratamento: TipoTratamento[] = [
-  { id: "1", nome: "Protese Total", descricao: "A protese total, conhecida como dentadura, e uma protese removivel que substitui todos os dentes de uma arcada. E indicada para pacientes que perderam todos os dentes.", categoria: "Protese Removivel", duracao: "4 a 6 meses", indicacoes: "Perda total dos dentes, reabsorcao ossea significativa", contraindicacoes: "Alergia ao material acrilico" },
-  { id: "2", nome: "Protese Parcial Removivel", descricao: "Protese que substitui um ou mais dentes perdidos, podendo ser removida pelo paciente para higienizacao. Possui estrutura metalica ou em resina.", categoria: "Protese Removivel", duracao: "3 a 5 meses", indicacoes: "Perda parcial de dentes, necessidade de reabilitacao estetica e funcional", contraindicacoes: "Doenca periodontal nao tratada" },
-  { id: "3", nome: "Protese Fixa (Coroa)", descricao: "Restauracao protesica que recobre totalmente um dente comprometido. Pode ser metalocermica, em zirconia ou em porcelana pura.", categoria: "Protese Fixa", duracao: "2 a 4 semanas", indicacoes: "Dente com grande destruicao coronaria, pos tratamento endodontico", contraindicacoes: "Raiz comprometida, doenca periodontal avancada" },
-  { id: "4", nome: "Implante Dentario", descricao: "Pino de titanio inserido cirurgicamente no osso maxilar ou mandibular para substituir a raiz de um dente perdido. Sobre ele e instalada uma protese.", categoria: "Implantodontia", duracao: "4 a 8 meses", indicacoes: "Perda de um ou mais dentes com osso suficiente", contraindicacoes: "Quantidade ossea insuficiente, doencas sistemicas nao controladas" },
-  { id: "5", nome: "Faceta em Porcelana", descricao: "Lamina fina de porcelana colada na face vestibular dos dentes anteriores para melhorar estetica. Corrige cor, forma e alinhamento.", categoria: "Estetica", duracao: "2 a 3 semanas", indicacoes: "Dentes escurecidos, mal posicionados, com diastemas", contraindicacoes: "Bruxismo severo, higiene oral deficiente" },
-  { id: "6", nome: "Protese sobre Implante (Protocolo)", descricao: "Protese fixa sobre implantes que substitui todos os dentes de uma arcada. Oferece maior estabilidade e conforto comparado a protese total convencional.", categoria: "Implantodontia", duracao: "6 a 12 meses", indicacoes: "Edentulismo total com desejo de protese fixa", contraindicacoes: "Insuficiencia ossea severa, condicoes sistemicas comprometedoras" },
+  { id: "1", nome: "Protese Total", descricao: "A protese total, conhecida como dentadura, e uma protese removivel que substitui todos os dentes de uma arcada. E indicada para pacientes que perderam todos os dentes.", categoria: "Protese Removivel", duracao: "4 a 6 meses", indicacoes: "Perda total dos dentes, reabsorcao ossea significativa", contraindicacoes: "Alergia ao material acrilico", imagens: ["/images/protese-total.jpg"] },
+  { id: "2", nome: "Protese Parcial Removivel", descricao: "Protese que substitui um ou mais dentes perdidos, podendo ser removida pelo paciente para higienizacao. Possui estrutura metalica ou em resina.", categoria: "Protese Removivel", duracao: "3 a 5 meses", indicacoes: "Perda parcial de dentes, necessidade de reabilitacao estetica e funcional", contraindicacoes: "Doenca periodontal nao tratada", imagens: ["/images/protese-parcial.jpg"] },
+  { id: "3", nome: "Protese Fixa (Coroa)", descricao: "Restauracao protesica que recobre totalmente um dente comprometido. Pode ser metalocermica, em zirconia ou em porcelana pura.", categoria: "Protese Fixa", duracao: "2 a 4 semanas", indicacoes: "Dente com grande destruicao coronaria, pos tratamento endodontico", contraindicacoes: "Raiz comprometida, doenca periodontal avancada", imagens: ["/images/coroa-fixa.jpg"] },
+  { id: "4", nome: "Implante Dentario", descricao: "Pino de titanio inserido cirurgicamente no osso maxilar ou mandibular para substituir a raiz de um dente perdido. Sobre ele e instalada uma protese.", categoria: "Implantodontia", duracao: "4 a 8 meses", indicacoes: "Perda de um ou mais dentes com osso suficiente", contraindicacoes: "Quantidade ossea insuficiente, doencas sistemicas nao controladas", imagens: ["/images/implante.jpg"] },
+  { id: "5", nome: "Faceta em Porcelana", descricao: "Lamina fina de porcelana colada na face vestibular dos dentes anteriores para melhorar estetica. Corrige cor, forma e alinhamento.", categoria: "Estetica", duracao: "2 a 3 semanas", indicacoes: "Dentes escurecidos, mal posicionados, com diastemas", contraindicacoes: "Bruxismo severo, higiene oral deficiente", imagens: ["/images/faceta.jpg"] },
+  { id: "6", nome: "Protese sobre Implante (Protocolo)", descricao: "Protese fixa sobre implantes que substitui todos os dentes de uma arcada. Oferece maior estabilidade e conforto comparado a protese total convencional.", categoria: "Implantodontia", duracao: "6 a 12 meses", indicacoes: "Edentulismo total com desejo de protese fixa", contraindicacoes: "Insuficiencia ossea severa, condicoes sistemicas comprometedoras", imagens: ["/images/protocolo.jpg"] },
 ]
 
 interface AppState {
@@ -115,6 +116,7 @@ interface AppState {
   historyParams: Record<string, string>[]
   addAnamnese: (anamnese: Anamnese) => void
   addTratamento: (tratamento: Tratamento) => void
+  registrarPaciente: (cpf: string, nome: string) => Paciente
 }
 
 const AppContext = createContext<AppState | null>(null)
@@ -126,7 +128,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [screenParams, setScreenParams] = useState<Record<string, string>>({})
   const [history, setHistory] = useState<string[]>([])
   const [historyParams, setHistoryParams] = useState<Record<string, string>[]>([])
-  const [pacientes] = useState(mockPacientes)
+  const [pacientes, setPacientes] = useState(mockPacientes)
   const [dentistas] = useState(mockDentistas)
   const [tratamentos, setTratamentos] = useState(mockTratamentos)
   const [anamneses, setAnamneses] = useState(mockAnamneses)
@@ -158,6 +160,19 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setTratamentos((prev) => [...prev, tratamento])
   }
 
+  const registrarPaciente = (cpf: string, nome: string): Paciente => {
+    const novoPaciente: Paciente = {
+      id: Date.now().toString(),
+      nome,
+      cpf,
+      telefone: "",
+      email: "",
+      dataNascimento: "",
+    }
+    setPacientes((prev) => [...prev, novoPaciente])
+    return novoPaciente
+  }
+
   return (
     <AppContext.Provider
       value={{
@@ -178,6 +193,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         historyParams,
         addAnamnese,
         addTratamento,
+        registrarPaciente,
       }}
     >
       {children}

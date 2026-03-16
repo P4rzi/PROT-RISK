@@ -16,7 +16,7 @@ import {
 } from "lucide-react"
 
 export function DentistaHome() {
-  const { currentUser, navigate, setRole, setCurrentUser, tratamentos, pacientes } = useApp()
+  const { currentUser, navigate, logout, tratamentos, pacientes } = useApp()
   const dentista = currentUser as Dentista
 
   const meusTratamentos = tratamentos.filter((t) => t.dentistaId === dentista.id)
@@ -26,9 +26,7 @@ export function DentistaHome() {
   const totalPacientes = meusPackientesIds.size
 
   const handleLogout = () => {
-    setRole(null as never)
-    setCurrentUser(null)
-    navigate("login")
+    logout()
   }
 
   return (

@@ -43,7 +43,16 @@ const screens: Record<string, React.ComponentType> = {
 }
 
 export function AppRouter() {
-  const { screen } = useApp()
+  const { screen, isInitializing } = useApp()
+
+  if (isInitializing) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background px-6">
+        <p className="text-sm text-muted-foreground">Carregando dados da sessao...</p>
+      </div>
+    )
+  }
+
   const ScreenComponent = screens[screen] || LoginScreen
 
   return <ScreenComponent />

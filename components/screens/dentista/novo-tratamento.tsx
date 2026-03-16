@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { useApp, type Dentista, type Tratamento } from "@/lib/store"
+import { toast } from "@/hooks/use-toast"
 import { MobileShell } from "@/components/mobile-shell"
 import { CheckCircle2, Plus, X } from "lucide-react"
 
@@ -18,6 +19,7 @@ export function DentistaNovoTratamento() {
   const [procedimentos, setProcedimentos] = useState<string[]>([])
   const [novoProcedimento, setNovoProcedimento] = useState("")
   const [success, setSuccess] = useState(false)
+  const [error, setError] = useState("")
 
   const addProcedimento = () => {
     if (novoProcedimento.trim()) {
@@ -30,8 +32,9 @@ export function DentistaNovoTratamento() {
     setProcedimentos((prev) => prev.filter((_, i) => i !== index))
   }
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!selectedPaciente || !tipo || !descricao) return
+    setError("")
 
     const novoTratamento: Tratamento = {
       id: Date.now().toString(),
@@ -45,11 +48,25 @@ export function DentistaNovoTratamento() {
       procedimentos,
     }
 
-    addTratamento(novoTratamento)
-    setSuccess(true)
-    setTimeout(() => {
-      navigate("dentista-home")
-    }, 1500)
+    try {
+      await addTratamento(novoTratamento)
+      toast({
+        title: "Tratamento salvo",
+        description: "Novo tratamento registrado com sucesso.",
+      })
+      setSuccess(true)
+      setTimeout(() => {
+        navigate("dentista-home")
+      }, 1500)
+    } catch (e) {
+      const message = e instanceof Error ? e.message : "Falha ao salvar tratamento"
+      setError(message)
+      toast({
+        title: "Erro ao salvar tratamento",
+        description: message,
+        variant: "destructive",
+      })
+    }
   }
 
   if (success) {
@@ -209,6 +226,7 @@ export function DentistaNovoTratamento() {
         >
           Salvar Tratamento
         </button>
+        {error && <p className="text-sm text-destructive">{error}</p>}
       </div>
     </MobileShell>
   )

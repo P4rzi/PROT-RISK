@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { useApp, type Dentista, type Anamnese } from "@/lib/store"
+import { toast } from "@/hooks/use-toast"
 import { MobileShell } from "@/components/mobile-shell"
 import { CheckCircle2 } from "lucide-react"
 
@@ -39,6 +40,7 @@ export function DentistaAnamneseForm() {
   const [queixa, setQueixa] = useState("")
   const [observacoes, setObservacoes] = useState("")
   const [success, setSuccess] = useState(false)
+  const [error, setError] = useState("")
 
   const toggleRisco = (risco: string) => {
     setRiscosSelecionados((prev) =>
@@ -46,8 +48,9 @@ export function DentistaAnamneseForm() {
     )
   }
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!selectedPaciente || !queixa) return
+    setError("")
 
     const novaAnamnese: Anamnese = {
       id: Date.now().toString(),
@@ -64,11 +67,25 @@ export function DentistaAnamneseForm() {
       observacoes,
     }
 
-    addAnamnese(novaAnamnese)
-    setSuccess(true)
-    setTimeout(() => {
-      navigate("dentista-home")
-    }, 1500)
+    try {
+      await addAnamnese(novaAnamnese)
+      toast({
+        title: "Anamnese salva",
+        description: "Anamnese registrada com sucesso.",
+      })
+      setSuccess(true)
+      setTimeout(() => {
+        navigate("dentista-home")
+      }, 1500)
+    } catch (e) {
+      const message = e instanceof Error ? e.message : "Falha ao salvar anamnese"
+      setError(message)
+      toast({
+        title: "Erro ao salvar anamnese",
+        description: message,
+        variant: "destructive",
+      })
+    }
   }
 
   if (success) {
@@ -268,6 +285,7 @@ export function DentistaAnamneseForm() {
         >
           Salvar Anamnese
         </button>
+        {error && <p className="text-sm text-destructive">{error}</p>}
       </div>
     </MobileShell>
   )

@@ -1,6 +1,14 @@
 "use client"
 
-import { createContext, useContext, useState, type ReactNode } from "react"
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react"
 
 export type UserRole = "paciente" | "dentista"
 
@@ -60,43 +68,72 @@ export interface TipoTratamento {
   imagens: string[]
 }
 
-// Mock data
-const mockPacientes: Paciente[] = [
-  { id: "1", nome: "Maria Silva", cpf: "123.456.789-00", telefone: "(11) 98765-4321", email: "maria@email.com", dataNascimento: "1990-05-15" },
-  { id: "2", nome: "Joao Santos", cpf: "987.654.321-00", telefone: "(11) 91234-5678", email: "joao@email.com", dataNascimento: "1985-08-22" },
-  { id: "3", nome: "Ana Oliveira", cpf: "456.789.123-00", telefone: "(11) 93456-7890", email: "ana@email.com", dataNascimento: "1995-03-10" },
-  { id: "4", nome: "Carlos Pereira", cpf: "321.654.987-00", telefone: "(11) 94567-8901", email: "carlos@email.com", dataNascimento: "1978-12-01" },
-  { id: "5", nome: "Lucia Fernandes", cpf: "654.321.987-00", telefone: "(11) 95678-9012", email: "lucia@email.com", dataNascimento: "1992-07-18" },
-]
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") ?? "http://localhost:3333/api/v1"
 
-const mockDentistas: Dentista[] = [
-  { id: "1", nome: "Dr. Roberto Almeida", cro: "CRO-SP 12345", especialidade: "Protese Dentaria" },
-  { id: "2", nome: "Dra. Fernanda Costa", cro: "CRO-SP 67890", especialidade: "Ortodontia" },
-]
+const ACCESS_TOKEN_KEY = "protrisk.accessToken"
+const REFRESH_TOKEN_KEY = "protrisk.refreshToken"
 
-const mockTratamentos: Tratamento[] = [
-  { id: "1", pacienteId: "1", dentistaId: "1", tipo: "Protese Total", descricao: "Protese total superior e inferior", status: "em_andamento", dataInicio: "2025-01-15", proximaConsulta: "2025-03-20", observacoes: "Paciente em fase de adaptacao", procedimentos: ["Moldagem inicial", "Prova de dentes", "Instalacao"] },
-  { id: "2", pacienteId: "1", dentistaId: "1", tipo: "Protese Parcial", descricao: "Protese parcial removivel inferior", status: "finalizado", dataInicio: "2024-06-10", dataFim: "2024-12-20", observacoes: "Tratamento concluido com sucesso", procedimentos: ["Exame clinico", "Moldagem", "Ajuste oclusal", "Entrega final"] },
-  { id: "3", pacienteId: "2", dentistaId: "1", tipo: "Implante Dentario", descricao: "Implante unitario dente 36", status: "em_andamento", dataInicio: "2025-02-01", proximaConsulta: "2025-04-15", observacoes: "Aguardando osseointegacao", procedimentos: ["Cirurgia de implante", "Reabertura", "Moldagem sobre implante"] },
-  { id: "4", pacienteId: "3", dentistaId: "2", tipo: "Protese Fixa", descricao: "Coroa metalocermica dente 14", status: "recomendacao", dataInicio: "2025-03-01", observacoes: "Recomendacao para inicio apos avaliacao", procedimentos: ["Preparo dental", "Moldagem", "Prova", "Cimentacao"] },
-  { id: "5", pacienteId: "2", dentistaId: "1", tipo: "Protese Total", descricao: "Protese total superior", status: "finalizado", dataInicio: "2024-03-01", dataFim: "2024-09-15", observacoes: "Paciente bem adaptado", procedimentos: ["Moldagem anatomica", "Moldagem funcional", "Registro oclusal", "Prova", "Instalacao"] },
-  { id: "6", pacienteId: "4", dentistaId: "1", tipo: "Faceta em Porcelana", descricao: "Facetas nos dentes 11 a 21", status: "em_andamento", dataInicio: "2025-01-20", proximaConsulta: "2025-03-25", observacoes: "Em fase de preparo", procedimentos: ["Planejamento digital", "Mock-up", "Preparo", "Moldagem", "Cimentacao"] },
-  { id: "7", pacienteId: "5", dentistaId: "2", tipo: "Protese sobre Implante", descricao: "Protocolosuperiorsobre 6 implantes", status: "recomendacao", dataInicio: "2025-04-01", observacoes: "Paciente em avaliacao pre-operatoria", procedimentos: ["Exames complementares", "Cirurgia", "Moldagem", "Instalacao"] },
-]
+type TratamentoStatus = "em_andamento" | "finalizado" | "recomendacao"
 
-const mockAnamneses: Anamnese[] = [
-  { id: "1", pacienteId: "1", dentistaId: "1", data: "2025-01-10", alergias: "Penicilina", medicamentos: "Anti-hipertensivo", doencasPreExistentes: "Hipertensao", riscos: ["Pressao alta", "Diabetes"], historicoFamiliar: "Diabetes na familia", habitos: "Nao fuma", queixaPrincipal: "Dificuldade para mastigar", observacoes: "Paciente colaborativo" },
-  { id: "2", pacienteId: "2", dentistaId: "1", data: "2025-01-28", alergias: "Nenhuma", medicamentos: "Nenhum", doencasPreExistentes: "Nenhuma", riscos: [], historicoFamiliar: "Sem historico relevante", habitos: "Ex-fumante", queixaPrincipal: "Perda dentaria", observacoes: "Boa saude geral" },
-]
+interface ApiProfilePaciente {
+  id: string
+  nome: string
+  cpf: string
+  telefone: string
+  email: string
+  dataNascimento: string | null
+}
 
-const mockTiposTratamento: TipoTratamento[] = [
-  { id: "1", nome: "Protese Total", descricao: "A protese total, conhecida como dentadura, e uma protese removivel que substitui todos os dentes de uma arcada. E indicada para pacientes que perderam todos os dentes.", categoria: "Protese Removivel", duracao: "4 a 6 meses", indicacoes: "Perda total dos dentes, reabsorcao ossea significativa", contraindicacoes: "Alergia ao material acrilico", imagens: ["/images/protese-total.jpg"] },
-  { id: "2", nome: "Protese Parcial Removivel", descricao: "Protese que substitui um ou mais dentes perdidos, podendo ser removida pelo paciente para higienizacao. Possui estrutura metalica ou em resina.", categoria: "Protese Removivel", duracao: "3 a 5 meses", indicacoes: "Perda parcial de dentes, necessidade de reabilitacao estetica e funcional", contraindicacoes: "Doenca periodontal nao tratada", imagens: ["/images/protese-parcial.jpg"] },
-  { id: "3", nome: "Protese Fixa (Coroa)", descricao: "Restauracao protesica que recobre totalmente um dente comprometido. Pode ser metalocermica, em zirconia ou em porcelana pura.", categoria: "Protese Fixa", duracao: "2 a 4 semanas", indicacoes: "Dente com grande destruicao coronaria, pos tratamento endodontico", contraindicacoes: "Raiz comprometida, doenca periodontal avancada", imagens: ["/images/coroa-fixa.jpg"] },
-  { id: "4", nome: "Implante Dentario", descricao: "Pino de titanio inserido cirurgicamente no osso maxilar ou mandibular para substituir a raiz de um dente perdido. Sobre ele e instalada uma protese.", categoria: "Implantodontia", duracao: "4 a 8 meses", indicacoes: "Perda de um ou mais dentes com osso suficiente", contraindicacoes: "Quantidade ossea insuficiente, doencas sistemicas nao controladas", imagens: ["/images/implante.jpg"] },
-  { id: "5", nome: "Faceta em Porcelana", descricao: "Lamina fina de porcelana colada na face vestibular dos dentes anteriores para melhorar estetica. Corrige cor, forma e alinhamento.", categoria: "Estetica", duracao: "2 a 3 semanas", indicacoes: "Dentes escurecidos, mal posicionados, com diastemas", contraindicacoes: "Bruxismo severo, higiene oral deficiente", imagens: ["/images/faceta.jpg"] },
-  { id: "6", nome: "Protese sobre Implante (Protocolo)", descricao: "Protese fixa sobre implantes que substitui todos os dentes de uma arcada. Oferece maior estabilidade e conforto comparado a protese total convencional.", categoria: "Implantodontia", duracao: "6 a 12 meses", indicacoes: "Edentulismo total com desejo de protese fixa", contraindicacoes: "Insuficiencia ossea severa, condicoes sistemicas comprometedoras", imagens: ["/images/protocolo.jpg"] },
-]
+interface ApiProfileDentista {
+  id: string
+  nome: string
+  cro: string
+  especialidade: string
+}
+
+interface ApiAuthUser {
+  id: string
+  role: UserRole
+  profile: ApiProfilePaciente | ApiProfileDentista
+}
+
+interface ApiAuthResponse {
+  accessToken: string
+  refreshToken: string
+  user: ApiAuthUser
+}
+
+interface ApiTratamento {
+  id: string
+  pacienteId: string
+  dentistaId: string
+  tipo: string
+  descricao: string
+  status: TratamentoStatus
+  dataInicio: string
+  dataFim?: string | null
+  proximaConsulta?: string | null
+  observacoes: string
+  procedimentos: string[]
+  dentista?: { id: string; nome: string; cro: string; especialidade: string }
+  paciente?: { id: string; nome: string; cpf: string; telefone: string; email: string; dataNascimento?: string | null }
+}
+
+interface ApiAnamnese {
+  id: string
+  pacienteId: string
+  dentistaId: string
+  data: string
+  alergias: string
+  medicamentos: string
+  doencasPreExistentes: string
+  riscos: string[]
+  historicoFamiliar: string
+  habitos: string
+  queixaPrincipal: string
+  observacoes: string
+}
 
 interface AppState {
   role: UserRole | null
@@ -108,31 +145,300 @@ interface AppState {
   tratamentos: Tratamento[]
   anamneses: Anamnese[]
   tiposTratamento: TipoTratamento[]
+  isInitializing: boolean
   setRole: (role: UserRole) => void
   setCurrentUser: (user: Paciente | Dentista | null) => void
+  login: (role: UserRole, identifier: string, senha: string) => Promise<void>
+  logout: () => void
   navigate: (screen: string, params?: Record<string, string>) => void
   goBack: () => void
   history: string[]
   historyParams: Record<string, string>[]
-  addAnamnese: (anamnese: Anamnese) => void
-  addTratamento: (tratamento: Tratamento) => void
-  registrarPaciente: (cpf: string, nome: string) => Paciente
+  addAnamnese: (anamnese: Anamnese) => Promise<void>
+  addTratamento: (tratamento: Tratamento) => Promise<void>
+  registrarPaciente: (cpf: string, nome: string, senha: string) => Promise<Paciente>
 }
 
 const AppContext = createContext<AppState | null>(null)
 
 export function AppProvider({ children }: { children: ReactNode }) {
-  const [role, setRole] = useState<UserRole | null>(null)
+  const [role, setRoleState] = useState<UserRole | null>(null)
   const [currentUser, setCurrentUser] = useState<Paciente | Dentista | null>(null)
   const [screen, setScreen] = useState("login")
   const [screenParams, setScreenParams] = useState<Record<string, string>>({})
   const [history, setHistory] = useState<string[]>([])
   const [historyParams, setHistoryParams] = useState<Record<string, string>[]>([])
-  const [pacientes, setPacientes] = useState(mockPacientes)
-  const [dentistas] = useState(mockDentistas)
-  const [tratamentos, setTratamentos] = useState(mockTratamentos)
-  const [anamneses, setAnamneses] = useState(mockAnamneses)
-  const [tiposTratamento] = useState(mockTiposTratamento)
+  const [pacientes, setPacientes] = useState<Paciente[]>([])
+  const [dentistas, setDentistas] = useState<Dentista[]>([])
+  const [tratamentos, setTratamentos] = useState<Tratamento[]>([])
+  const [anamneses, setAnamneses] = useState<Anamnese[]>([])
+  const [tiposTratamento, setTiposTratamento] = useState<TipoTratamento[]>([])
+  const [isInitializing, setIsInitializing] = useState(true)
+  const [accessToken, setAccessToken] = useState<string | null>(null)
+  const [refreshToken, setRefreshToken] = useState<string | null>(null)
+  const accessTokenRef = useRef<string | null>(null)
+  const refreshTokenRef = useRef<string | null>(null)
+
+  const persistTokens = (nextAccessToken: string | null, nextRefreshToken: string | null) => {
+    accessTokenRef.current = nextAccessToken
+    refreshTokenRef.current = nextRefreshToken
+    setAccessToken(nextAccessToken)
+    setRefreshToken(nextRefreshToken)
+
+    if (typeof window === "undefined") return
+    if (nextAccessToken) {
+      localStorage.setItem(ACCESS_TOKEN_KEY, nextAccessToken)
+    } else {
+      localStorage.removeItem(ACCESS_TOKEN_KEY)
+    }
+
+    if (nextRefreshToken) {
+      localStorage.setItem(REFRESH_TOKEN_KEY, nextRefreshToken)
+    } else {
+      localStorage.removeItem(REFRESH_TOKEN_KEY)
+    }
+  }
+
+  const mapApiPaciente = (profile: ApiProfilePaciente): Paciente => ({
+    id: profile.id,
+    nome: profile.nome,
+    cpf: profile.cpf,
+    telefone: profile.telefone,
+    email: profile.email,
+    dataNascimento: profile.dataNascimento ?? "",
+  })
+
+  const mapApiDentista = (profile: ApiProfileDentista): Dentista => ({
+    id: profile.id,
+    nome: profile.nome,
+    cro: profile.cro,
+    especialidade: profile.especialidade,
+  })
+
+  const mapApiTratamento = (item: ApiTratamento): Tratamento => ({
+    id: item.id,
+    pacienteId: item.pacienteId,
+    dentistaId: item.dentistaId,
+    tipo: item.tipo,
+    descricao: item.descricao,
+    status: item.status,
+    dataInicio: item.dataInicio,
+    dataFim: item.dataFim ?? undefined,
+    proximaConsulta: item.proximaConsulta ?? undefined,
+    observacoes: item.observacoes,
+    procedimentos: item.procedimentos,
+  })
+
+  const mapApiAnamnese = (item: ApiAnamnese): Anamnese => ({
+    id: item.id,
+    pacienteId: item.pacienteId,
+    dentistaId: item.dentistaId,
+    data: item.data,
+    alergias: item.alergias,
+    medicamentos: item.medicamentos,
+    doencasPreExistentes: item.doencasPreExistentes,
+    riscos: item.riscos,
+    historicoFamiliar: item.historicoFamiliar,
+    habitos: item.habitos,
+    queixaPrincipal: item.queixaPrincipal,
+    observacoes: item.observacoes,
+  })
+
+  const extractErrorMessage = (payload: unknown, fallback = "Erro ao comunicar com servidor") => {
+    if (
+      payload &&
+      typeof payload === "object" &&
+      "error" in payload &&
+      payload.error &&
+      typeof payload.error === "object" &&
+      "message" in payload.error &&
+      typeof payload.error.message === "string"
+    ) {
+      return payload.error.message
+    }
+    return fallback
+  }
+
+  const apiFetch = async <T,>(
+    path: string,
+    options: RequestInit = {},
+    token?: string | null,
+  ): Promise<T> => {
+    const headers = new Headers(options.headers)
+    headers.set("Content-Type", "application/json")
+    if (token) {
+      headers.set("Authorization", `Bearer ${token}`)
+    }
+
+    const response = await fetch(`${API_BASE_URL}${path}`, {
+      ...options,
+      headers,
+      cache: "no-store",
+    })
+
+    const data = await response.json().catch(() => ({}))
+
+    if (!response.ok) {
+      throw new Error(extractErrorMessage(data))
+    }
+
+    return data as T
+  }
+
+  const refreshAccess = async () => {
+    if (!refreshTokenRef.current) return null
+
+    const data = await apiFetch<{ accessToken: string }>("/auth/refresh", {
+      method: "POST",
+      body: JSON.stringify({ refreshToken: refreshTokenRef.current }),
+    })
+
+    persistTokens(data.accessToken, refreshTokenRef.current)
+    return data.accessToken
+  }
+
+  const apiFetchWithAuth = async <T,>(path: string, options: RequestInit = {}): Promise<T> => {
+    if (!accessTokenRef.current) {
+      throw new Error("Sessao expirada")
+    }
+
+    try {
+      return await apiFetch<T>(path, options, accessTokenRef.current)
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Sessao expirada"
+      if (!message.toLowerCase().includes("token")) {
+        throw error
+      }
+
+      const nextAccess = await refreshAccess()
+      if (!nextAccess) {
+        throw error
+      }
+
+      return apiFetch<T>(path, options, nextAccess)
+    }
+  }
+
+  const hydrateCurrentUser = (user: ApiAuthUser) => {
+    setRoleState(user.role)
+    if (user.role === "paciente") {
+      setCurrentUser(mapApiPaciente(user.profile as ApiProfilePaciente))
+      setScreen("paciente-home")
+      return
+    }
+
+    setCurrentUser(mapApiDentista(user.profile as ApiProfileDentista))
+    setScreen("dentista-home")
+  }
+
+  const loadTiposTratamento = async () => {
+    const data = await apiFetchWithAuth<{ items: TipoTratamento[] }>("/tipos-tratamento?limit=100")
+    setTiposTratamento(data.items ?? [])
+  }
+
+  const loadPacienteData = async () => {
+    const [emAndamento, finalizados, recomendacoes, anamneseResponse] = await Promise.all([
+      apiFetchWithAuth<ApiTratamento[]>("/pacientes/me/tratamentos?status=em_andamento"),
+      apiFetchWithAuth<ApiTratamento[]>("/pacientes/me/tratamentos?status=finalizado"),
+      apiFetchWithAuth<ApiTratamento[]>("/pacientes/me/tratamentos?status=recomendacao"),
+      apiFetchWithAuth<{ item: ApiAnamnese | null }>("/pacientes/me/anamnese"),
+    ])
+
+    const allTreatments = [...emAndamento, ...finalizados, ...recomendacoes]
+    setTratamentos(allTreatments.map(mapApiTratamento))
+
+    const dentistsMap = new Map<string, Dentista>()
+    allTreatments.forEach((item) => {
+      if (!item.dentista) return
+      dentistsMap.set(item.dentista.id, mapApiDentista(item.dentista))
+    })
+    setDentistas(Array.from(dentistsMap.values()))
+
+    if (anamneseResponse.item) {
+      setAnamneses([mapApiAnamnese(anamneseResponse.item)])
+    } else {
+      setAnamneses([])
+    }
+  }
+
+  const loadDentistaData = async () => {
+    const [pacientesResponse, tratamentosResponse] = await Promise.all([
+      apiFetchWithAuth<Paciente[]>("/dentistas/me/pacientes"),
+      apiFetchWithAuth<ApiTratamento[]>("/dentistas/me/tratamentos"),
+    ])
+
+    const normalizedPacientes = pacientesResponse.map((p) => ({
+      ...p,
+      dataNascimento: p.dataNascimento ?? "",
+    }))
+    setPacientes(normalizedPacientes)
+
+    const normalizedTratamentos = tratamentosResponse.map(mapApiTratamento)
+    setTratamentos(normalizedTratamentos)
+
+    const anamnesePromises = normalizedPacientes.map((paciente) =>
+      apiFetchWithAuth<{ item: ApiAnamnese | null }>(`/pacientes/${paciente.id}/anamnese`).catch(() => ({ item: null })),
+    )
+    const anamneseResults = await Promise.all(anamnesePromises)
+    setAnamneses(
+      anamneseResults
+        .map((result) => result.item)
+        .filter((item): item is ApiAnamnese => item !== null)
+        .map(mapApiAnamnese),
+    )
+  }
+
+  const hydrateData = async (nextRole: UserRole) => {
+    await loadTiposTratamento()
+    if (nextRole === "paciente") {
+      await loadPacienteData()
+    } else {
+      await loadDentistaData()
+    }
+  }
+
+  const clearSessionState = () => {
+    setRoleState(null)
+    setCurrentUser(null)
+    setPacientes([])
+    setDentistas([])
+    setTratamentos([])
+    setAnamneses([])
+    setTiposTratamento([])
+    setScreen("login")
+    setScreenParams({})
+    setHistory([])
+    setHistoryParams([])
+    persistTokens(null, null)
+  }
+
+  const login = async (nextRole: UserRole, identifier: string, senha: string) => {
+    const data = await apiFetch<ApiAuthResponse>("/auth/login", {
+      method: "POST",
+      body: JSON.stringify({ role: nextRole, identifier, senha }),
+    })
+
+    persistTokens(data.accessToken, data.refreshToken)
+    hydrateCurrentUser(data.user)
+    await hydrateData(data.user.role)
+  }
+
+  const logout = () => {
+    clearSessionState()
+  }
+
+  const registrarPaciente = async (cpf: string, nome: string, senha: string): Promise<Paciente> => {
+    const data = await apiFetch<ApiAuthResponse>("/auth/pacientes/primeiro-acesso", {
+      method: "POST",
+      body: JSON.stringify({ cpf, nome, senha }),
+    })
+
+    persistTokens(data.accessToken, data.refreshToken)
+    hydrateCurrentUser(data.user)
+    await hydrateData("paciente")
+
+    return mapApiPaciente(data.user.profile as ApiProfilePaciente)
+  }
 
   const navigate = (newScreen: string, params?: Record<string, string>) => {
     setHistory((prev) => [...prev, screen])
@@ -153,49 +459,117 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }
 
   const addAnamnese = (anamnese: Anamnese) => {
-    setAnamneses((prev) => [...prev, anamnese])
+    return apiFetchWithAuth<ApiAnamnese>("/anamneses", {
+      method: "POST",
+      body: JSON.stringify({
+        pacienteId: anamnese.pacienteId,
+        data: anamnese.data,
+        alergias: anamnese.alergias,
+        medicamentos: anamnese.medicamentos,
+        doencasPreExistentes: anamnese.doencasPreExistentes,
+        riscos: anamnese.riscos,
+        historicoFamiliar: anamnese.historicoFamiliar,
+        habitos: anamnese.habitos,
+        queixaPrincipal: anamnese.queixaPrincipal,
+        observacoes: anamnese.observacoes,
+      }),
+    }).then((created) => {
+      setAnamneses((prev) => [mapApiAnamnese(created), ...prev])
+    })
   }
 
   const addTratamento = (tratamento: Tratamento) => {
-    setTratamentos((prev) => [...prev, tratamento])
+    return apiFetchWithAuth<ApiTratamento>("/tratamentos", {
+      method: "POST",
+      body: JSON.stringify({
+        pacienteId: tratamento.pacienteId,
+        tipo: tratamento.tipo,
+        descricao: tratamento.descricao,
+        status: tratamento.status,
+        dataInicio: tratamento.dataInicio,
+        dataFim: tratamento.dataFim,
+        proximaConsulta: tratamento.proximaConsulta,
+        observacoes: tratamento.observacoes,
+        procedimentos: tratamento.procedimentos,
+      }),
+    }).then((created) => {
+      setTratamentos((prev) => [mapApiTratamento(created), ...prev])
+    })
   }
 
-  const registrarPaciente = (cpf: string, nome: string): Paciente => {
-    const novoPaciente: Paciente = {
-      id: Date.now().toString(),
-      nome,
-      cpf,
-      telefone: "",
-      email: "",
-      dataNascimento: "",
-    }
-    setPacientes((prev) => [...prev, novoPaciente])
-    return novoPaciente
+  const setRole = (nextRole: UserRole) => {
+    setRoleState(nextRole)
   }
+
+  useEffect(() => {
+    if (typeof window === "undefined") return
+
+    const storedAccess = localStorage.getItem(ACCESS_TOKEN_KEY)
+    const storedRefresh = localStorage.getItem(REFRESH_TOKEN_KEY)
+    if (!storedAccess || !storedRefresh) {
+      setIsInitializing(false)
+      return
+    }
+
+    persistTokens(storedAccess, storedRefresh)
+
+    const restore = async () => {
+      try {
+        const user = await apiFetch<ApiAuthUser>("/auth/me", {}, storedAccess)
+        hydrateCurrentUser(user)
+        await hydrateData(user.role)
+      } catch {
+        clearSessionState()
+      } finally {
+        setIsInitializing(false)
+      }
+    }
+
+    void restore()
+  }, [])
+
+  const value = useMemo<AppState>(
+    () => ({
+      role,
+      currentUser,
+      screen,
+      screenParams,
+      pacientes,
+      dentistas,
+      tratamentos,
+      anamneses,
+      tiposTratamento,
+      isInitializing,
+      setRole,
+      setCurrentUser,
+      login,
+      logout,
+      navigate,
+      goBack,
+      history,
+      historyParams,
+      addAnamnese,
+      addTratamento,
+      registrarPaciente,
+    }),
+    [
+      role,
+      currentUser,
+      screen,
+      screenParams,
+      pacientes,
+      dentistas,
+      tratamentos,
+      anamneses,
+      tiposTratamento,
+      isInitializing,
+      history,
+      historyParams,
+    ],
+  )
 
   return (
-    <AppContext.Provider
-      value={{
-        role,
-        currentUser,
-        screen,
-        screenParams,
-        pacientes,
-        dentistas,
-        tratamentos,
-        anamneses,
-        tiposTratamento,
-        setRole,
-        setCurrentUser,
-        navigate,
-        goBack,
-        history,
-        historyParams,
-        addAnamnese,
-        addTratamento,
-        registrarPaciente,
-      }}
-    >
+    <AppContext.Provider value={value}>
       {children}
     </AppContext.Provider>
   )

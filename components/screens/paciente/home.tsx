@@ -14,7 +14,7 @@ import {
 } from "lucide-react"
 
 export function PacienteHome() {
-  const { currentUser, navigate, setRole, setCurrentUser, tratamentos } = useApp()
+  const { currentUser, navigate, logout, tratamentos } = useApp()
   const paciente = currentUser as Paciente
 
   const meusTratamentos = tratamentos.filter((t) => t.pacienteId === paciente.id)
@@ -22,9 +22,7 @@ export function PacienteHome() {
   const finalizados = meusTratamentos.filter((t) => t.status === "finalizado").length
 
   const handleLogout = () => {
-    setRole(null as never)
-    setCurrentUser(null)
-    navigate("login")
+    logout()
   }
 
   return (

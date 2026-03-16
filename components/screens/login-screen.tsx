@@ -2,17 +2,19 @@
 
 import { useState } from "react"
 import { useApp } from "@/lib/store"
+import { toast } from "@/hooks/use-toast"
 import { Shield, Eye, EyeOff, ArrowLeft, CheckCircle2 } from "lucide-react"
 
 type Step = "login" | "primeiro-acesso-cpf" | "primeiro-acesso-senha" | "primeiro-acesso-sucesso"
 
 export function LoginScreen() {
-  const { setRole, setCurrentUser, navigate, pacientes, dentistas, registrarPaciente } = useApp()
+  const { login, navigate, registrarPaciente, isInitializing } = useApp()
   const [mode, setMode] = useState<"paciente" | "dentista">("paciente")
   const [identifier, setIdentifier] = useState("")
   const [senha, setSenha] = useState("")
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState("")
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   // First access state
   const [step, setStep] = useState<Step>("login")
@@ -24,33 +26,31 @@ export function LoginScreen() {
   const [showConfirmar, setShowConfirmar] = useState(false)
   const [firstAccessError, setFirstAccessError] = useState("")
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     setError("")
     if (!identifier || !senha) {
       setError("Preencha todos os campos")
       return
     }
 
-    if (mode === "paciente") {
-      const paciente = pacientes.find((p) => p.cpf === identifier)
-      if (paciente) {
-        setRole("paciente")
-        setCurrentUser(paciente)
-        navigate("paciente-home")
-      } else {
-        setError("CPF nao encontrado. Use 'Primeiro acesso' para se cadastrar.")
-      }
-    } else {
-      const dentista = dentistas.find((d) => d.cro === identifier)
-      if (dentista) {
-        setRole("dentista")
-        setCurrentUser(dentista)
-        navigate("dentista-home")
-      } else {
-        setRole("dentista")
-        setCurrentUser(dentistas[0])
-        navigate("dentista-home")
-      }
+    setIsSubmitting(true)
+    try {
+      await login(mode, identifier, senha)
+      toast({
+        title: "Login realizado",
+        description: "Sessao autenticada com sucesso.",
+      })
+      navigate(mode === "paciente" ? "paciente-home" : "dentista-home")
+    } catch (e) {
+      const message = e instanceof Error ? e.message : "Falha ao autenticar"
+      setError(message)
+      toast({
+        title: "Falha no login",
+        description: message,
+        variant: "destructive",
+      })
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -64,15 +64,10 @@ export function LoginScreen() {
       setFirstAccessError("Informe seu nome completo")
       return
     }
-    const existe = pacientes.find((p) => p.cpf === novoCpf)
-    if (existe) {
-      setFirstAccessError("CPF ja cadastrado. Faca login normalmente.")
-      return
-    }
     setStep("primeiro-acesso-senha")
   }
 
-  const handleFirstAccessSenha = () => {
+  const handleFirstAccessSenha = async () => {
     setFirstAccessError("")
     if (!novaSenha || !confirmarSenha) {
       setFirstAccessError("Preencha todos os campos")
@@ -86,13 +81,29 @@ export function LoginScreen() {
       setFirstAccessError("As senhas nao coincidem")
       return
     }
-    const novoPaciente = registrarPaciente(novoCpf, nomeCompleto)
-    setRole("paciente")
-    setCurrentUser(novoPaciente)
-    setStep("primeiro-acesso-sucesso")
-    setTimeout(() => {
-      navigate("paciente-home")
-    }, 2000)
+
+    setIsSubmitting(true)
+    try {
+      await registrarPaciente(novoCpf, nomeCompleto, novaSenha)
+      toast({
+        title: "Conta criada",
+        description: "Seu cadastro foi realizado com sucesso.",
+      })
+      setStep("primeiro-acesso-sucesso")
+      setTimeout(() => {
+        navigate("paciente-home")
+      }, 1200)
+    } catch (e) {
+      const message = e instanceof Error ? e.message : "Falha ao criar conta"
+      setFirstAccessError(message)
+      toast({
+        title: "Falha no cadastro",
+        description: message,
+        variant: "destructive",
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const resetFirstAccess = () => {
@@ -106,6 +117,14 @@ export function LoginScreen() {
 
   const inputClasses =
     "w-full px-4 py-3 rounded-lg border border-input bg-card text-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring transition-colors"
+
+  if (isInitializing) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background px-6">
+        <p className="text-sm text-muted-foreground">Carregando sessao...</p>
+      </div>
+    )
+  }
 
   // First access success
   if (step === "primeiro-acesso-sucesso") {
@@ -205,9 +224,10 @@ export function LoginScreen() {
 
             <button
               onClick={handleFirstAccessSenha}
+              disabled={isSubmitting}
               className="w-full py-3.5 bg-primary text-primary-foreground rounded-lg font-semibold text-sm hover:opacity-90 transition-opacity shadow-sm mt-2"
             >
-              Criar conta
+              {isSubmitting ? "Criando conta..." : "Criar conta"}
             </button>
           </div>
         </div>
@@ -373,9 +393,10 @@ export function LoginScreen() {
 
           <button
             onClick={handleLogin}
+            disabled={isSubmitting}
             className="w-full py-3.5 bg-primary text-primary-foreground rounded-lg font-semibold text-sm hover:opacity-90 transition-opacity shadow-sm mt-2"
           >
-            Entrar
+            {isSubmitting ? "Entrando..." : "Entrar"}
           </button>
 
           <div className="flex flex-col items-center gap-2 mt-1">

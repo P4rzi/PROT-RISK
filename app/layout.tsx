@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
+import { Toaster } from '@/components/ui/toaster'
 
 import './globals.css'
 
@@ -27,6 +28,7 @@ export default function RootLayout({
     <html lang="pt-BR">
       <body className="font-sans antialiased max-w-[430px] mx-auto min-h-screen bg-background">
         {children}
+        <Toaster />
       </body>
     </html>
   )

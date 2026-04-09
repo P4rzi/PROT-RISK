@@ -21,9 +21,9 @@ export function DentistaPacientesLista() {
 
   return (
     <MobileShell title="Pacientes">
-      <div className="px-4 py-5 flex flex-col gap-4">
+      <div className="px-4 md:px-8 lg:px-10 py-6 lg:py-8 max-w-5xl flex flex-col gap-4">
         {/* Search */}
-        <div className="relative">
+        <div className="relative max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input
             type="text"
@@ -40,7 +40,7 @@ export function DentistaPacientesLista() {
         </p>
 
         {/* List */}
-        <div className="flex flex-col gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 lg:gap-4">
           {filteredPacientes.map((paciente) => {
             const pacienteTratamentos = meusTratamentos.filter(
               (t) => t.pacienteId === paciente.id && t.status === "em_andamento"
@@ -49,7 +49,7 @@ export function DentistaPacientesLista() {
               <button
                 key={paciente.id}
                 onClick={() => navigate("dentista-paciente-detalhe", { id: paciente.id })}
-                className="flex items-center gap-3 bg-card rounded-xl p-4 border border-border shadow-sm hover:border-primary/30 transition-colors text-left"
+                className="flex items-center gap-3 bg-card rounded-xl p-4 lg:p-5 border border-border hover:border-primary/40 transition-all text-left"
               >
                 <div className="w-11 h-11 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
                   <User className="w-5 h-5 text-primary" />

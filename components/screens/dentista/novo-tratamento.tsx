@@ -90,7 +90,7 @@ export function DentistaNovoTratamento() {
 
   return (
     <MobileShell title="Novo Tratamento">
-      <div className="px-4 py-5 flex flex-col gap-4">
+      <div className="px-4 md:px-8 lg:px-10 py-6 lg:py-8 max-w-2xl flex flex-col gap-4">
         {/* Select patient */}
         {!pacienteId && (
           <div>

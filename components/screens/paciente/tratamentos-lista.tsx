@@ -36,7 +36,7 @@ export function PacienteTratamentosLista() {
 
   return (
     <MobileShell title={title}>
-      <div className="px-4 py-5 flex flex-col gap-4">
+      <div className="px-4 md:px-8 lg:px-10 py-6 lg:py-8 max-w-5xl flex flex-col gap-5">
         {/* Filter chips */}
         <div className="flex gap-2 overflow-x-auto pb-1">
           {Object.entries(statusLabels).map(([key, label]) => {
@@ -69,7 +69,7 @@ export function PacienteTratamentosLista() {
             </p>
           </div>
         ) : (
-          <div className="flex flex-col gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 lg:gap-4">
             {meusTratamentos.map((tratamento) => {
               const dentista = dentistas.find((d) => d.id === tratamento.dentistaId)
               const colorClasses = statusColors[tratamento.status]
@@ -77,7 +77,7 @@ export function PacienteTratamentosLista() {
                 <button
                   key={tratamento.id}
                   onClick={() => navigate("paciente-tratamento-detalhe", { id: tratamento.id })}
-                  className="flex items-center gap-3 bg-card rounded-xl p-4 border border-border shadow-sm hover:border-primary/30 transition-colors text-left"
+                  className="flex items-center gap-3 bg-card rounded-xl p-4 lg:p-5 border border-border hover:border-primary/40 transition-all text-left"
                 >
                   <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${colorClasses}`}>
                     <Icon className="w-5 h-5" />

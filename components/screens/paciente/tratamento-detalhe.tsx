@@ -38,9 +38,9 @@ export function PacienteTratamentoDetalhe() {
 
   return (
     <MobileShell title="Detalhe do Tratamento">
-      <div className="px-4 py-5 flex flex-col gap-5">
+      <div className="px-4 md:px-8 lg:px-10 py-6 lg:py-8 max-w-4xl flex flex-col gap-5">
         {/* Header card */}
-        <div className="bg-card rounded-xl p-5 border border-border shadow-sm">
+        <div className="bg-card rounded-xl p-5 lg:p-6 border border-border">
           <div className="flex items-start justify-between mb-3">
             <h2 className="text-lg font-bold text-foreground">{tratamento.tipo}</h2>
             <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${config.color} ${config.bg}`}>
@@ -51,7 +51,7 @@ export function PacienteTratamentoDetalhe() {
         </div>
 
         {/* Info cards */}
-        <div className="flex flex-col gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {dentista && (
             <div className="flex items-center gap-3 bg-card rounded-xl p-4 border border-border">
               <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
@@ -100,7 +100,7 @@ export function PacienteTratamentoDetalhe() {
         </div>
 
         {/* Procedures */}
-        <div className="bg-card rounded-xl p-5 border border-border shadow-sm">
+        <div className="bg-card rounded-xl p-5 lg:p-6 border border-border">
           <div className="flex items-center gap-2 mb-4">
             <ClipboardList className="w-5 h-5 text-primary" />
             <h3 className="text-sm font-semibold text-foreground">Procedimentos</h3>
@@ -119,7 +119,7 @@ export function PacienteTratamentoDetalhe() {
 
         {/* Notes */}
         {tratamento.observacoes && (
-          <div className="bg-card rounded-xl p-5 border border-border shadow-sm">
+          <div className="bg-card rounded-xl p-5 lg:p-6 border border-border">
             <div className="flex items-center gap-2 mb-3">
               <FileText className="w-5 h-5 text-primary" />
               <h3 className="text-sm font-semibold text-foreground">Observacoes</h3>

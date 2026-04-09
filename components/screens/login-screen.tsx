@@ -121,23 +121,57 @@ export function LoginScreen() {
   if (isInitializing) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background px-6">
-        <p className="text-sm text-muted-foreground">Carregando sessao...</p>
+        <p className="text-sm text-muted-foreground">Carregando sessão...</p>
       </div>
     )
   }
 
+  const BrandingPanel = () => (
+    <div className="hidden lg:flex lg:w-[46%] bg-[hsl(228,28%,12%)] relative overflow-hidden">
+      <div className="relative z-10 flex flex-col justify-between p-12 xl:p-16 w-full">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center">
+            <Shield className="w-5 h-5 text-white" />
+          </div>
+          <span className="text-lg font-bold text-white tracking-tight">ProtRisk</span>
+        </div>
+
+        <div className="space-y-6">
+          <h2 className="text-4xl xl:text-5xl font-extrabold text-white leading-[1.1] tracking-tight">
+            Sistema
+            <br />
+            Odontológico
+            <br />
+            <span className="text-[hsl(166,60%,50%)]">Inteligente</span>
+          </h2>
+          <p className="text-base text-white/50 max-w-sm leading-relaxed">
+            Gerencie tratamentos protéticos com análise de risco.
+            Acompanhe pacientes, procedimentos e anamneses em um só lugar.
+          </p>
+        </div>
+
+        <p className="text-xs text-white/20 font-medium">v1.0.0 — ProtRisk</p>
+      </div>
+      <div className="absolute -top-32 -right-32 w-[420px] h-[420px] rounded-full bg-[hsl(166,64%,32%)]/8" />
+      <div className="absolute -bottom-24 -left-24 w-[320px] h-[320px] rounded-full bg-[hsl(166,64%,32%)]/5" />
+    </div>
+  )
+
   // First access success
   if (step === "primeiro-acesso-sucesso") {
     return (
-      <div className="flex flex-col min-h-screen bg-background items-center justify-center px-6">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-16 h-16 rounded-full bg-accent/10 flex items-center justify-center">
-            <CheckCircle2 className="w-8 h-8 text-accent" />
+      <div className="flex min-h-screen">
+        <BrandingPanel />
+        <div className="flex-1 flex items-center justify-center px-6">
+          <div className="flex flex-col items-center gap-5 animate-in">
+            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
+              <CheckCircle2 className="w-8 h-8 text-primary" />
+            </div>
+            <h2 className="text-xl font-bold text-foreground text-center">Cadastro realizado!</h2>
+            <p className="text-sm text-muted-foreground text-center leading-relaxed max-w-xs">
+              Sua conta foi criada com sucesso. Você será redirecionado em instantes.
+            </p>
           </div>
-          <h2 className="text-lg font-bold text-foreground text-center">Cadastro realizado!</h2>
-          <p className="text-sm text-muted-foreground text-center leading-relaxed">
-            Sua conta foi criada com sucesso. Voce sera redirecionado em instantes.
-          </p>
         </div>
       </div>
     )
@@ -146,89 +180,89 @@ export function LoginScreen() {
   // First access - password step
   if (step === "primeiro-acesso-senha") {
     return (
-      <div className="flex flex-col min-h-screen bg-background">
-        <div className="flex-1 flex flex-col items-center justify-center px-6 py-8">
-          <div className="flex flex-col items-center gap-3 mb-10">
-            <div className="w-20 h-20 rounded-2xl bg-primary flex items-center justify-center shadow-lg">
-              <Shield className="w-10 h-10 text-primary-foreground" />
+      <div className="flex min-h-screen">
+        <BrandingPanel />
+        <div className="flex-1 flex flex-col">
+          <div className="lg:hidden flex items-center gap-3 px-6 pt-8 pb-2">
+            <div className="w-9 h-9 rounded-lg bg-primary flex items-center justify-center">
+              <Shield className="w-5 h-5 text-primary-foreground" />
             </div>
-            <h1 className="text-2xl font-bold text-foreground tracking-tight">ProtRisk</h1>
+            <span className="text-base font-bold text-foreground tracking-tight">ProtRisk</span>
           </div>
+          <div className="flex-1 flex items-center justify-center px-6 py-8 lg:px-12">
+            <div className="w-full max-w-[420px] animate-in">
+              <button
+                onClick={() => setStep("primeiro-acesso-cpf")}
+                className="flex items-center gap-1.5 text-sm text-primary font-medium mb-6 hover:underline"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                Voltar
+              </button>
+              <h2 className="text-2xl font-bold text-foreground mb-1">Crie sua senha</h2>
+              <p className="text-sm text-muted-foreground mb-8">
+                Defina uma senha segura para acessar sua conta
+              </p>
 
-          <div className="w-full mb-6">
-            <button
-              onClick={() => setStep("primeiro-acesso-cpf")}
-              className="flex items-center gap-1 text-sm text-primary font-medium mb-4"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Voltar
-            </button>
-            <h2 className="text-lg font-semibold text-foreground">Crie sua senha</h2>
-            <p className="text-sm text-muted-foreground mt-1">
-              Defina uma senha segura para acessar sua conta
-            </p>
-          </div>
+              <div className="flex flex-col gap-4">
+                <div className="bg-primary/5 rounded-lg p-3.5 border border-primary/10">
+                  <p className="text-xs text-muted-foreground">Paciente</p>
+                  <p className="text-sm font-semibold text-foreground">{nomeCompleto}</p>
+                  <p className="text-xs text-muted-foreground">{novoCpf}</p>
+                </div>
 
-          <div className="w-full flex flex-col gap-4">
-            <div className="bg-primary/5 rounded-xl p-3 border border-primary/10">
-              <p className="text-xs text-muted-foreground">Paciente</p>
-              <p className="text-sm font-semibold text-foreground">{nomeCompleto}</p>
-              <p className="text-xs text-muted-foreground">{novoCpf}</p>
-            </div>
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-1.5">Nova senha</label>
+                  <div className="relative">
+                    <input
+                      type={showNovaSenha ? "text" : "password"}
+                      placeholder="Mínimo 6 caracteres"
+                      value={novaSenha}
+                      onChange={(e) => setNovaSenha(e.target.value)}
+                      className={inputClasses + " pr-12"}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowNovaSenha(!showNovaSenha)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                      aria-label={showNovaSenha ? "Ocultar senha" : "Mostrar senha"}
+                    >
+                      {showNovaSenha ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                    </button>
+                  </div>
+                </div>
 
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-1.5">Nova senha</label>
-              <div className="relative">
-                <input
-                  type={showNovaSenha ? "text" : "password"}
-                  placeholder="Minimo 6 caracteres"
-                  value={novaSenha}
-                  onChange={(e) => setNovaSenha(e.target.value)}
-                  className={inputClasses + " pr-12"}
-                />
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-1.5">Confirmar senha</label>
+                  <div className="relative">
+                    <input
+                      type={showConfirmar ? "text" : "password"}
+                      placeholder="Repita a senha"
+                      value={confirmarSenha}
+                      onChange={(e) => setConfirmarSenha(e.target.value)}
+                      className={inputClasses + " pr-12"}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmar(!showConfirmar)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                      aria-label={showConfirmar ? "Ocultar senha" : "Mostrar senha"}
+                    >
+                      {showConfirmar ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                    </button>
+                  </div>
+                </div>
+
+                {firstAccessError && <p className="text-sm text-destructive">{firstAccessError}</p>}
+
                 <button
-                  type="button"
-                  onClick={() => setShowNovaSenha(!showNovaSenha)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                  aria-label={showNovaSenha ? "Ocultar senha" : "Mostrar senha"}
+                  onClick={handleFirstAccessSenha}
+                  disabled={isSubmitting}
+                  className="w-full py-3 bg-primary text-primary-foreground rounded-lg font-semibold text-sm hover:brightness-110 transition-all mt-2 disabled:opacity-50"
                 >
-                  {showNovaSenha ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  {isSubmitting ? "Criando conta..." : "Criar conta"}
                 </button>
               </div>
             </div>
-
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-1.5">Confirmar senha</label>
-              <div className="relative">
-                <input
-                  type={showConfirmar ? "text" : "password"}
-                  placeholder="Repita a senha"
-                  value={confirmarSenha}
-                  onChange={(e) => setConfirmarSenha(e.target.value)}
-                  className={inputClasses + " pr-12"}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirmar(!showConfirmar)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                  aria-label={showConfirmar ? "Ocultar senha" : "Mostrar senha"}
-                >
-                  {showConfirmar ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                </button>
-              </div>
-            </div>
-
-            {firstAccessError && (
-              <p className="text-sm text-destructive">{firstAccessError}</p>
-            )}
-
-            <button
-              onClick={handleFirstAccessSenha}
-              disabled={isSubmitting}
-              className="w-full py-3.5 bg-primary text-primary-foreground rounded-lg font-semibold text-sm hover:opacity-90 transition-opacity shadow-sm mt-2"
-            >
-              {isSubmitting ? "Criando conta..." : "Criar conta"}
-            </button>
           </div>
         </div>
       </div>
@@ -238,62 +272,62 @@ export function LoginScreen() {
   // First access - CPF step
   if (step === "primeiro-acesso-cpf") {
     return (
-      <div className="flex flex-col min-h-screen bg-background">
-        <div className="flex-1 flex flex-col items-center justify-center px-6 py-8">
-          <div className="flex flex-col items-center gap-3 mb-10">
-            <div className="w-20 h-20 rounded-2xl bg-primary flex items-center justify-center shadow-lg">
-              <Shield className="w-10 h-10 text-primary-foreground" />
+      <div className="flex min-h-screen">
+        <BrandingPanel />
+        <div className="flex-1 flex flex-col">
+          <div className="lg:hidden flex items-center gap-3 px-6 pt-8 pb-2">
+            <div className="w-9 h-9 rounded-lg bg-primary flex items-center justify-center">
+              <Shield className="w-5 h-5 text-primary-foreground" />
             </div>
-            <h1 className="text-2xl font-bold text-foreground tracking-tight">ProtRisk</h1>
+            <span className="text-base font-bold text-foreground tracking-tight">ProtRisk</span>
           </div>
+          <div className="flex-1 flex items-center justify-center px-6 py-8 lg:px-12">
+            <div className="w-full max-w-[420px] animate-in">
+              <button
+                onClick={resetFirstAccess}
+                className="flex items-center gap-1.5 text-sm text-primary font-medium mb-6 hover:underline"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                Voltar ao login
+              </button>
+              <h2 className="text-2xl font-bold text-foreground mb-1">Primeiro acesso</h2>
+              <p className="text-sm text-muted-foreground mb-8">
+                Informe seu CPF e nome completo para criar sua conta
+              </p>
 
-          <div className="w-full mb-6">
-            <button
-              onClick={resetFirstAccess}
-              className="flex items-center gap-1 text-sm text-primary font-medium mb-4"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Voltar ao login
-            </button>
-            <h2 className="text-lg font-semibold text-foreground">Primeiro acesso</h2>
-            <p className="text-sm text-muted-foreground mt-1">
-              Informe seu CPF e nome completo para criar sua conta
-            </p>
-          </div>
+              <div className="flex flex-col gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-1.5">CPF</label>
+                  <input
+                    type="text"
+                    placeholder="000.000.000-00"
+                    value={novoCpf}
+                    onChange={(e) => setNovoCpf(e.target.value)}
+                    className={inputClasses}
+                  />
+                </div>
 
-          <div className="w-full flex flex-col gap-4">
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-1.5">CPF</label>
-              <input
-                type="text"
-                placeholder="000.000.000-00"
-                value={novoCpf}
-                onChange={(e) => setNovoCpf(e.target.value)}
-                className={inputClasses}
-              />
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-1.5">Nome completo</label>
+                  <input
+                    type="text"
+                    placeholder="Seu nome completo"
+                    value={nomeCompleto}
+                    onChange={(e) => setNomeCompleto(e.target.value)}
+                    className={inputClasses}
+                  />
+                </div>
+
+                {firstAccessError && <p className="text-sm text-destructive">{firstAccessError}</p>}
+
+                <button
+                  onClick={handleFirstAccessCpf}
+                  className="w-full py-3 bg-primary text-primary-foreground rounded-lg font-semibold text-sm hover:brightness-110 transition-all mt-2"
+                >
+                  Continuar
+                </button>
+              </div>
             </div>
-
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-1.5">Nome completo</label>
-              <input
-                type="text"
-                placeholder="Seu nome completo"
-                value={nomeCompleto}
-                onChange={(e) => setNomeCompleto(e.target.value)}
-                className={inputClasses}
-              />
-            </div>
-
-            {firstAccessError && (
-              <p className="text-sm text-destructive">{firstAccessError}</p>
-            )}
-
-            <button
-              onClick={handleFirstAccessCpf}
-              className="w-full py-3.5 bg-primary text-primary-foreground rounded-lg font-semibold text-sm hover:opacity-90 transition-opacity shadow-sm mt-2"
-            >
-              Continuar
-            </button>
           </div>
         </div>
       </div>
@@ -302,123 +336,126 @@ export function LoginScreen() {
 
   // Main login screen
   return (
-    <div className="flex flex-col min-h-screen bg-background">
-      <div className="flex-1 flex flex-col items-center justify-center px-6 py-8">
-        {/* Logo */}
-        <div className="flex flex-col items-center gap-3 mb-10">
-          <div className="w-20 h-20 rounded-2xl bg-primary flex items-center justify-center shadow-lg">
-            <Shield className="w-10 h-10 text-primary-foreground" />
+    <div className="flex min-h-screen">
+      <BrandingPanel />
+
+      <div className="flex-1 flex flex-col">
+        {/* Mobile header */}
+        <div className="lg:hidden flex items-center gap-3 px-6 pt-8 pb-2">
+          <div className="w-9 h-9 rounded-lg bg-primary flex items-center justify-center">
+            <Shield className="w-5 h-5 text-primary-foreground" />
           </div>
-          <h1 className="text-2xl font-bold text-foreground tracking-tight">ProtRisk</h1>
-          <p className="text-sm text-muted-foreground text-center">Sistema Odontologico</p>
-        </div>
-
-        {/* Tabs */}
-        <div className="w-full flex bg-secondary rounded-lg p-1 mb-8">
-          <button
-            onClick={() => { setMode("paciente"); setIdentifier(""); setError("") }}
-            className={`flex-1 py-2.5 text-sm font-medium rounded-md transition-all ${
-              mode === "paciente"
-                ? "bg-card text-foreground shadow-sm"
-                : "text-muted-foreground"
-            }`}
-          >
-            Paciente
-          </button>
-          <button
-            onClick={() => { setMode("dentista"); setIdentifier(""); setError("") }}
-            className={`flex-1 py-2.5 text-sm font-medium rounded-md transition-all ${
-              mode === "dentista"
-                ? "bg-card text-foreground shadow-sm"
-                : "text-muted-foreground"
-            }`}
-          >
-            Dentista
-          </button>
-        </div>
-
-        {/* Welcome */}
-        <div className="w-full mb-6">
-          <h2 className="text-lg font-semibold text-foreground">
-            {"Bem-vindo, " + (mode === "paciente" ? "Paciente" : "Dr./Dra.")}
-          </h2>
-          <p className="text-sm text-muted-foreground mt-1">
-            {mode === "paciente"
-              ? "Acesse seus tratamentos e informacoes"
-              : "Gerencie seus pacientes e tratamentos"}
-          </p>
-        </div>
-
-        {/* Form */}
-        <div className="w-full flex flex-col gap-4">
           <div>
-            <label className="block text-sm font-medium text-foreground mb-1.5">
-              {mode === "paciente" ? "CPF" : "CRO"}
-            </label>
-            <input
-              type="text"
-              placeholder={mode === "paciente" ? "000.000.000-00" : "CRO-SP 00000"}
-              value={identifier}
-              onChange={(e) => setIdentifier(e.target.value)}
-              className={inputClasses}
-            />
+            <p className="text-base font-bold text-foreground tracking-tight">ProtRisk</p>
+            <p className="text-[11px] text-muted-foreground">Sistema Odontológico</p>
           </div>
+        </div>
 
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-1.5">
-              Senha
-            </label>
-            <div className="relative">
-              <input
-                type={showPassword ? "text" : "password"}
-                placeholder="Sua senha"
-                value={senha}
-                onChange={(e) => setSenha(e.target.value)}
-                className={inputClasses + " pr-12"}
-              />
+        {/* Form area */}
+        <div className="flex-1 flex items-center justify-center px-6 py-8 lg:px-12">
+          <div className="w-full max-w-[420px] animate-in">
+            {/* Mode toggle */}
+            <div className="flex bg-muted rounded-lg p-1 mb-10">
               <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+                onClick={() => { setMode("paciente"); setIdentifier(""); setError("") }}
+                className={`flex-1 py-2.5 text-sm font-medium rounded-md transition-all ${
+                  mode === "paciente"
+                    ? "bg-card text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground/70"
+                }`}
               >
-                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                Paciente
+              </button>
+              <button
+                onClick={() => { setMode("dentista"); setIdentifier(""); setError("") }}
+                className={`flex-1 py-2.5 text-sm font-medium rounded-md transition-all ${
+                  mode === "dentista"
+                    ? "bg-card text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground/70"
+                }`}
+              >
+                Dentista
               </button>
             </div>
-          </div>
 
-          {error && (
-            <p className="text-sm text-destructive">{error}</p>
-          )}
+            {/* Heading */}
+            <h2 className="text-2xl font-bold text-foreground mb-1">
+              {mode === "paciente" ? "Olá, Paciente" : "Olá, Doutor(a)"}
+            </h2>
+            <p className="text-sm text-muted-foreground mb-8">
+              {mode === "paciente"
+                ? "Acesse seus tratamentos e informações"
+                : "Gerencie seus pacientes e tratamentos"}
+            </p>
 
-          <button
-            onClick={handleLogin}
-            disabled={isSubmitting}
-            className="w-full py-3.5 bg-primary text-primary-foreground rounded-lg font-semibold text-sm hover:opacity-90 transition-opacity shadow-sm mt-2"
-          >
-            {isSubmitting ? "Entrando..." : "Entrar"}
-          </button>
+            {/* Fields */}
+            <div className="flex flex-col gap-4">
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-1.5">
+                  {mode === "paciente" ? "CPF" : "CRO"}
+                </label>
+                <input
+                  type="text"
+                  placeholder={mode === "paciente" ? "000.000.000-00" : "CRO-SP 00000"}
+                  value={identifier}
+                  onChange={(e) => setIdentifier(e.target.value)}
+                  className={inputClasses}
+                />
+              </div>
 
-          <div className="flex flex-col items-center gap-2 mt-1">
-            <button className="text-sm text-primary font-medium">
-              Esqueci minha senha
-            </button>
-            {mode === "paciente" && (
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-1.5">Senha</label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Sua senha"
+                    value={senha}
+                    onChange={(e) => setSenha(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && handleLogin()}
+                    className={inputClasses + " pr-12"}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                    aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+                  >
+                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  </button>
+                </div>
+              </div>
+
+              {error && <p className="text-sm text-destructive">{error}</p>}
+
               <button
-                onClick={() => setStep("primeiro-acesso-cpf")}
-                className="text-sm text-accent font-medium"
+                onClick={handleLogin}
+                disabled={isSubmitting}
+                className="w-full py-3 bg-primary text-primary-foreground rounded-lg font-semibold text-sm hover:brightness-110 transition-all mt-2 disabled:opacity-50"
               >
-                Primeiro acesso? Cadastre-se
+                {isSubmitting ? "Entrando..." : "Entrar"}
               </button>
-            )}
+
+              <div className="flex items-center justify-between mt-2">
+                <button className="text-sm text-muted-foreground hover:text-primary font-medium transition-colors">
+                  Esqueci minha senha
+                </button>
+                {mode === "paciente" && (
+                  <button
+                    onClick={() => setStep("primeiro-acesso-cpf")}
+                    className="text-sm text-primary font-semibold hover:underline"
+                  >
+                    Cadastre-se
+                  </button>
+                )}
+              </div>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="px-6 pb-6 text-center">
-        <p className="text-xs text-muted-foreground">
-          {"v1.0.0 - ProtRisk Sistema Odontologico"}
-        </p>
+        {/* Footer */}
+        <div className="lg:hidden px-6 pb-6 text-center">
+          <p className="text-xs text-muted-foreground/60">v1.0.0 — ProtRisk</p>
+        </div>
       </div>
     </div>
   )

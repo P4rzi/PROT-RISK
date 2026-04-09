@@ -19,14 +19,14 @@ export function DentistaPacientesTratamentos() {
 
   return (
     <MobileShell title="Pacientes em Tratamento">
-      <div className="px-4 py-5 flex flex-col gap-4">
+      <div className="px-4 md:px-8 lg:px-10 py-6 lg:py-8 max-w-5xl flex flex-col gap-4">
         {pacienteIds.map((pacienteId) => {
           const paciente = pacientes.find((p) => p.id === pacienteId)
           if (!paciente) return null
           const pacienteTratamentos = meusTratamentos.filter((t) => t.pacienteId === pacienteId)
 
           return (
-            <div key={pacienteId} className="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
+            <div key={pacienteId} className="bg-card rounded-xl border border-border overflow-hidden">
               {/* Patient header */}
               <button
                 onClick={() => navigate("dentista-paciente-detalhe", { id: pacienteId })}

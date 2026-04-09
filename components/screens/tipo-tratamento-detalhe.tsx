@@ -45,7 +45,7 @@ export function TipoTratamentoDetalheScreen() {
     <MobileShell title={tipo.nome}>
       <div className="flex flex-col gap-5 pb-6">
         {/* Image Carousel */}
-        <div className="relative w-full h-56 bg-muted">
+        <div className="relative w-full h-56 lg:h-80 bg-muted">
           <Image
             src={imagens[currentImage]}
             alt={`${tipo.nome} - foto ${currentImage + 1}`}
@@ -89,7 +89,7 @@ export function TipoTratamentoDetalheScreen() {
           </div>
         </div>
 
-        <div className="px-4 flex flex-col gap-5">
+        <div className="px-4 md:px-8 lg:px-10 flex flex-col gap-5 max-w-4xl">
           {/* Header info */}
           <div className="bg-card rounded-xl p-5 border border-border shadow-sm">
             <h2 className="text-lg font-bold text-foreground mb-1">{tipo.nome}</h2>

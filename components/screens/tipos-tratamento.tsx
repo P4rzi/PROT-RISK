@@ -12,23 +12,24 @@ export function TiposTratamentoScreen() {
 
   return (
     <MobileShell title="Tipos de Tratamentos">
-      <div className="px-4 py-5 flex flex-col gap-5">
+      <div className="px-4 md:px-8 lg:px-10 py-6 lg:py-8 max-w-5xl flex flex-col gap-5">
         <p className="text-sm text-muted-foreground leading-relaxed">
           Conheca os principais tipos de tratamentos proteticos e procedimentos disponiveis.
         </p>
 
         {categorias.map((cat) => (
           <div key={cat} className="flex flex-col gap-3">
-            <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">
               {cat}
             </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {tiposTratamento
               .filter((t) => t.categoria === cat)
               .map((tipo) => (
                 <button
                   key={tipo.id}
                   onClick={() => navigate("tipo-tratamento-detalhe", { id: tipo.id })}
-                  className="bg-card rounded-xl border border-border shadow-sm overflow-hidden hover:border-primary/30 transition-colors text-left"
+                  className="bg-card rounded-xl border border-border overflow-hidden hover:border-primary/40 transition-all text-left"
                 >
                   {/* Image */}
                   <div className="relative w-full h-40 bg-muted">
@@ -52,6 +53,7 @@ export function TiposTratamentoScreen() {
                   </div>
                 </button>
               ))}
+            </div>
           </div>
         ))}
       </div>

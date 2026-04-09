@@ -37,7 +37,7 @@ export function DentistaAnamneseView() {
 
   return (
     <MobileShell title="Anamnese">
-      <div className="px-4 py-5 flex flex-col gap-4">
+      <div className="px-4 md:px-8 lg:px-10 py-6 lg:py-8 max-w-4xl flex flex-col gap-4">
         {/* Patient */}
         <div className="flex items-center gap-3 bg-card rounded-xl p-4 border border-border">
           <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">

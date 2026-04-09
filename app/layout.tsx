@@ -1,22 +1,20 @@
 import type { Metadata, Viewport } from 'next'
-import { Inter } from 'next/font/google'
+import { DM_Sans } from 'next/font/google'
 import { Toaster } from '@/components/ui/toaster'
 
 import './globals.css'
 
-const _inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
+const dmSans = DM_Sans({ subsets: ['latin'], variable: '--font-dm-sans' })
 
 export const metadata: Metadata = {
-  title: 'ProtRisk - Sistema Odontologico',
-  description: 'Sistema de gerenciamento odontologico para pacientes e dentistas',
+  title: 'ProtRisk - Sistema Odontológico',
+  description: 'Sistema de gerenciamento odontológico para pacientes e dentistas',
 }
 
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
-  themeColor: '#0ea5e9',
+  themeColor: '#1a7a66',
 }
 
 export default function RootLayout({
@@ -26,7 +24,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR">
-      <body className="font-sans antialiased max-w-[430px] mx-auto min-h-screen bg-background">
+      <body className={`${dmSans.variable} font-sans antialiased min-h-screen bg-background`}>
         {children}
         <Toaster />
       </body>

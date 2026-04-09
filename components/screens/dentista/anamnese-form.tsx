@@ -109,7 +109,7 @@ export function DentistaAnamneseForm() {
 
   return (
     <MobileShell title="Nova Anamnese">
-      <div className="px-4 py-5 flex flex-col gap-4">
+      <div className="px-4 md:px-8 lg:px-10 py-6 lg:py-8 max-w-2xl flex flex-col gap-4">
         {/* Select patient */}
         {!pacienteId && (
           <div>
@@ -157,8 +157,8 @@ export function DentistaAnamneseForm() {
           <p className="text-xs text-muted-foreground mb-3">
             Marque as condicoes que o paciente possui
           </p>
-          <div className="bg-card rounded-xl border border-border p-4">
-            <div className="grid grid-cols-1 gap-2.5">
+          <div className="bg-card rounded-xl border border-border p-4 lg:p-5">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
               {RISCOS_COMUNS.map((risco) => {
                 const isChecked = riscosSelecionados.includes(risco)
                 return (

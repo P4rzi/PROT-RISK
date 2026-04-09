@@ -44,9 +44,9 @@ export function DentistaPacienteDetalhe() {
 
   return (
     <MobileShell title={paciente.nome}>
-      <div className="px-4 py-5 flex flex-col gap-5">
+      <div className="px-4 md:px-8 lg:px-10 py-6 lg:py-8 max-w-4xl flex flex-col gap-5">
         {/* Patient info card */}
-        <div className="bg-card rounded-xl p-5 border border-border shadow-sm">
+        <div className="bg-card rounded-xl p-5 lg:p-6 border border-border">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center">
               <User className="w-7 h-7 text-primary" />
